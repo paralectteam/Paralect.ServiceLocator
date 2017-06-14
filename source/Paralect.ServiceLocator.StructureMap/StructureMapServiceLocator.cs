@@ -1,14 +1,18 @@
-using System;
+﻿using System;
 using System.Collections.Generic;
+using System.Linq;
 using Microsoft.Practices.ServiceLocation;
 using StructureMap;
 
-namespace Paralect.ServiceLocator.StructureMap {
-    public class StructureMapServiceLocator : ServiceLocatorImplBase {
-        private IContainer container;
+namespace Paralect.ServiceLocator.StructureMap
+{
+    public class StructureMapServiceLocator : ServiceLocatorImplBase
+    {
+        private readonly IContainer _container;
 
-        public StructureMapServiceLocator(IContainer container) {
-            this.container = container;
+        public StructureMapServiceLocator(IContainer container)
+        {
+            _container = container;
         }
 
         /// <summary>
@@ -20,12 +24,9 @@ namespace Paralect.ServiceLocator.StructureMap {
         /// <returns>
         /// The requested service instance.
         /// </returns>
-        protected override object DoGetInstance(Type serviceType, string key) {
-            if (string.IsNullOrEmpty(key)) {
-                return container.GetInstance(serviceType);
-            } else {
-                return container.GetInstance(serviceType, key);
-            }
+        protected override object DoGetInstance(Type serviceType, string key)
+        {
+            return string.IsNullOrEmpty(key) ? _container.GetInstance(serviceType) : _container.GetInstance(serviceType, key);
         }
 
         /// <summary>
@@ -36,10 +37,9 @@ namespace Paralect.ServiceLocator.StructureMap {
         /// <returns>
         /// Sequence of service instance objects.
         /// </returns>
-        protected override IEnumerable<object> DoGetAllInstances(Type serviceType) {
-            foreach (object obj in container.GetAllInstances(serviceType)) {
-                yield return obj;
-            }
+        protected override IEnumerable<object> DoGetAllInstances(Type serviceType)
+        {
+            return _container.GetAllInstances(serviceType).Cast<object>();
         }
     }
 }
